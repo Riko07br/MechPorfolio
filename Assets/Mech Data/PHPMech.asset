@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad63337188059304088a84a19ff9ab8f, type: 3}
+  m_Name: PHPMech
+  m_EditorClassIdentifier: 
+  mechName: PHP
+  mechModel: {fileID: 0}
+  mechPrefab: {fileID: 0}
+  mechDescription: "PHP \xE9 altamente flex\xEDvel e adapt\xE1vel, capaz de lidar
+    com uma variedade de tarefas complexas em tempo real. Sua sintaxe simples e intuitiva
+    \xE9 como uma interface de controle f\xE1cil de usar que permite que voc\xEA
+    comande o Mech com facilidade. \r\nSuas bibliotecas robustas e extens\xEDveis
+    formam seu arsenal de armas altamente eficientes para realizar tarefas complexas
+    e resolver problemas dif\xEDceis de forma r\xE1pida e eficiente. \r\nAl\xE9m
+    disso, sua capacidade de integrar-se perfeitamente com a maioria dos bancos de
+    dados e sistemas web \xE9 sua habilidade especial que permite que voc\xEA se
+    mova rapidamente e se adapte a qualquer situa\xE7\xE3o.\r"

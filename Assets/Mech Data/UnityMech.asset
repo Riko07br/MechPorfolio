@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad63337188059304088a84a19ff9ab8f, type: 3}
+  m_Name: UnityMech
+  m_EditorClassIdentifier: 
+  mechName: Unity
+  mechModel: {fileID: 0}
+  mechPrefab: {fileID: 0}
+  mechDescription: "Unity \xE9 um Mech especializado em cria\xE7\xE3o de jogos, equipado
+    com uma ampla variedade de recursos e habilidades avan\xE7adas. \r\nSua interface
+    de usu\xE1rio intuitiva \xE9 um cockpit avan\xE7ado que permite que voc\xEA comande
+    o Mech com facilidade e precis\xE3o. \r\nSua engine robusta e extremamente flex\xEDvel
+    \xE9 seu arsenal de armas poderosas que permitem a cria\xE7\xE3o das mais diversas
+    experi\xEAncias. \r\nAl\xE9m disso, sua capacidade de suportar v\xE1rios sistemas
+    operacionais e plataformas de jogos \xE9 como uma habilidade especial que permite
+    o alcance global dos projetos realizados nesta ferramenta.\r"

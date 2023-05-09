@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad63337188059304088a84a19ff9ab8f, type: 3}
+  m_Name: CSharpMech
+  m_EditorClassIdentifier: 
+  mechName: C#
+  mechModel: {fileID: 0}
+  mechPrefab: {fileID: 0}
+  mechDescription: "Um Mech de batalha de \xFAltima gera\xE7\xE3o, projetado com
+    uma variedade de recursos avan\xE7ados e tecnologias de ponta. \r\nSua sintaxe
+    forte e rigorosa \xE9 como um conjunto de ferramentas de precis\xE3o que permitem
+    que voc\xEA controle cada aspecto do Mech com total confian\xE7a. \r\nSuas bibliotecas
+    robustas e extens\xEDveis s\xE3o como um arsenal de armas altamente eficientes
+    que podem ajud\xE1-lo a realizar tarefas complexas e resolver problemas dif\xEDceis.
+    \r\nCom C#, voc\xEA pode liderar o campo de batalha da programa\xE7\xE3o com
+    confian\xE7a e efici\xEAncia.\r"

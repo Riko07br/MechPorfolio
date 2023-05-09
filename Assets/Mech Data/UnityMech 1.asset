@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad63337188059304088a84a19ff9ab8f, type: 3}
+  m_Name: UnityMech 1
+  m_EditorClassIdentifier: 
+  mechName: MySQL
+  mechModel: {fileID: 0}
+  mechPrefab: {fileID: 0}
+  mechDescription: "MySQL \xE9 um Mech altamente especializado em gerenciamento de
+    banco de dados, equipado com uma ampla variedade de recursos avan\xE7ados e habilidades
+    especializadas.\r\nA capacidade de armazenar, organizar e recuperar dados com
+    efici\xEAncia \xE9 sua arma poderosa que permite o gerenciamento de grandes quantidades
+    de informa\xE7\xF5es com facilidade. \r\nSua linguagem de consulta poderosa e
+    f\xE1cil de usar \xE9 como uma interface de controle que permite a manipula\xE7\xE3o
+    de dados com precis\xE3o e efici\xEAncia. \r\nAl\xE9m disso, sua escalabilidade
+    e confiabilidade s\xE3o suas habilidades especiais que permitem o gerenciamento
+    de bancos de dados em larga escala, garantindo que os dados estejam sempre protegidos
+    e dispon\xEDveis.\r\nCom MySQL, voc\xEA pode gerenciar seus dados com confian\xE7a
+    e efici\xEAncia, garantindo que suas aplica\xE7\xF5es funcionem sem problemas.\r"

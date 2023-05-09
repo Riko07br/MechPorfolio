@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad63337188059304088a84a19ff9ab8f, type: 3}
+  m_Name: PythonMech
+  m_EditorClassIdentifier: 
+  mechName: Python
+  mechModel: {fileID: 0}
+  mechPrefab: {fileID: 0}
+  mechDescription: "Ampla gama de ferramentas e habilidades \xE0 disposi\xE7\xE3o.
+    \r\nSeu arsenal inclui bibliotecas poderosas e eficientes que ajudam a automatizar
+    tarefas, processar dados e resolver problemas complexos em um piscar de olhos.
+    \r\nA sintaxe intuitiva \xE9 como uma interface de controle f\xE1cil de usar
+    que permite que voc\xEA comande o Mech com facilidade. \r\nCom Python, \xE9 poss\xEDvel
+    enfrentar desafios de programa\xE7\xE3o com confian\xE7a e dominar a batalha
+    com flexibilidade."
