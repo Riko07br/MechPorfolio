@@ -40,7 +40,7 @@ public class CameraController : MonoBehaviour
 
     private void Update()
     {
-        if (cameraFollow)
+        if (isCameraFollowing)
             transform.position = cameraFollow.position;
 
         if (isCameraDisabled)
