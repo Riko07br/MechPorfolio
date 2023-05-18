@@ -1,85 +1,64 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 //componente colocado diretamente na camera, ela nao deve ter parent na hierarquia
 public class CameraController : MonoBehaviour
-{    
-    [SerializeField] float mouseSpeed = 10f;    //multiplicador de velocidade do mouse
-    [SerializeField] bool isCameraDisabled = false;   //flag para desativar o movimento da camera
+{
+    [SerializeField] bool isCameraDisabled = false; //flag para desativar o movimento da camera
     [SerializeField] bool isCameraFollowing = true; //flag para a camera nao seguir o player
-
-    [Tooltip("Objeto que a camera vai seguir, deve estar no player")]
-    [SerializeField] Transform camRefParent;   //os objetos para o scrip funcionar terao esse obj como parent 
-
-    [SerializeField] Transform camLimitingParent;   //referencia para limitar a rotacao lateral da camera, tambem e uma flag
+    [Space]
+    [SerializeField] Transform target;              // Ponto em torno do qual a camera orbitara
+    [SerializeField] float orbitSpeed = 10f;        //multiplicador de velocidade do mouse
+    [SerializeField] float verticalLimit = 10;      //angulo limitante para baixo e para cima
+    [SerializeField] float verticalOffset = 25f;    //offset inicial do angulo 
+    [Space]
+    [SerializeField] float height = 5f;             // Altura da câmera ao ponto de referência
+    [SerializeField] float distance = 5f;           // Distância da câmera ao ponto de referência    
+    [SerializeField] float minDistance = 1f;        // Distância mínima permitida
+    [SerializeField] float maxDistance = 10f;       // Distância máxima permitida
     
-    [Header("Limites verticais")]
-    [Tooltip("Quanto maior, mais a camera consegue rotacionar para baixo")]
-    [SerializeField] float minXAngle = 10; //angulos limitantes para baixo e para cima
-    [Tooltip("Quanto menor, mais a camera consegue rotacionar para cima")]
-    [SerializeField] float maxXAngle = 350; //angulos limitantes para baixo e para cima
+    Transform refParent;
+    Transform refChild;
 
-    Transform cameraPivot; //Parent do cameraFollow, colocado no player, vai girar somente em Y
-    Transform cameraFollow; //Vai girar somente em X e serve como referencia principal para a camera
+    float rotationX = 0f;       // Rotação vertical atual da câmera
 
     private void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
-        cameraPivot = new GameObject().transform;
-        cameraPivot.name = "CameraPivot";
-        cameraPivot.parent = camRefParent;
+        refParent = new GameObject("Ref Parent").transform;
+        refChild = new GameObject("Ref Child").transform;
+        refChild.parent = refParent;
+        refParent.position = transform.position;
+    }  
 
-        cameraFollow = new GameObject().transform;
-        cameraFollow.name = "Camera Follow";
-        cameraFollow.parent = cameraPivot;
-
-        cameraPivot.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
-        cameraFollow.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
-    }
-
-    private void Update()
+    void LateUpdate()
     {
-        if (isCameraFollowing)
-            transform.position = cameraFollow.position;
-
         if (isCameraDisabled)
             return;
 
-        Vector2 mouseMove = new (-Input.GetAxis("Mouse Y"), Input.GetAxis("Mouse X"));
+        // Obtem o movimento do mouse horizontal e vertical
+        float horizontal = Input.GetAxis("Mouse X");
+        float vertical = Input.GetAxis("Mouse Y");
 
-        //resolve a rotacao de cima para baixo
-        float camAngle = cameraFollow.localEulerAngles.x + (mouseMove.x * mouseSpeed);
-        
-        if (camAngle > 180 && camAngle < maxXAngle)
-            camAngle = maxXAngle;
-        else if (camAngle < 180 && camAngle > minXAngle)
-            camAngle = minXAngle;        
+        // Rotaciona a câmera horizontalmente em torno do ponto de referência
+        refParent.RotateAround(target.position, Vector3.up, horizontal * orbitSpeed * Time.deltaTime);
 
-        cameraFollow.localEulerAngles = new Vector3(camAngle, 0f);
+        // Rotaciona a câmera verticalmente
+        rotationX -= vertical * orbitSpeed * Time.deltaTime;
+        rotationX = Mathf.Clamp(rotationX, -verticalOffset - verticalLimit, -verticalOffset + verticalLimit);
+        refChild.localRotation = Quaternion.Euler(rotationX, 0f, 0f);
 
-        //resolve a rotacao para os lados
-        float camPivotAngle = cameraPivot.localEulerAngles.y + (mouseMove.y * mouseSpeed);
+        // Calcula a nova posição da câmera
+        Vector3 offset = new Vector3(0f, height, -distance);
+        Quaternion rotation = Quaternion.Euler(0f, refParent.rotation.eulerAngles.y, 0f);
+        refParent.position = target.position + rotation * offset;
 
-        if (camPivotAngle > 360f)
-            camPivotAngle -= 360f;
-        else if (camPivotAngle < 0f)
-            camPivotAngle += 360;
+        // Verifica se a distância está dentro dos limites
+        if (isCameraFollowing)
+            distance = Mathf.Clamp(distance - Input.mouseScrollDelta.y, minDistance, maxDistance);
 
-        cameraPivot.localEulerAngles = new Vector3(0f, camPivotAngle);
-
-        //limita a rotacao em relacao as pernas para um angulo maximo
-        if (camLimitingParent == null)
-            return;
-
-        float YAngle = Vector3.SignedAngle(cameraPivot.forward, camLimitingParent.forward, Vector3.up);
-
-        if (YAngle < -90f)        
-            cameraPivot.Rotate(Vector3.up, 90f + YAngle);        
-        else if (YAngle > 90f)        
-            cameraPivot.Rotate(Vector3.up, -90f + YAngle);
-
-        //aplica a rotacao levando em conta somente para onde o pivot aponta (evita gira da camera)
-        transform.rotation = Quaternion.LookRotation(cameraFollow.forward, Vector3.up);
+        transform.SetPositionAndRotation(refChild.position, refChild.rotation);
     }
 }

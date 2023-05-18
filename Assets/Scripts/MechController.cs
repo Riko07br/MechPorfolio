@@ -4,72 +4,97 @@ using UnityEngine;
 
 public class MechController : MonoBehaviour
 {
-    readonly float maxFallSpeed = -150f;
-    readonly float groundCheckDistance = .17f;
-
     [Header("Stats")]    
-    [SerializeField] float moveSpeed = 180f;
-    [SerializeField] float jumpForce = 50f;
-    [SerializeField] float weight = 10f;    //sado no calculo da gravidade
-    [SerializeField] float groundCheckRadius;   //usado no teste de grounded
+    [SerializeField] float moveSpeed = 20f;             //Velocidade de movimento
+    [SerializeField] float jumpForce = 20f;             //Forca de pulo
+    [SerializeField] float weight = 10f;                //Peso, usado no calculo da gravidade
+    [SerializeField] float groundCheckRadius;           //Usado no teste de grounded
 
     [Header("Legs")]
-    [SerializeField] Transform legsParent;  //parte que vai rotacionar e influenciar a direcao do movimento
-    [SerializeField] float legRotationSpeed = 10f; //velocidade de rotação das pernas
+    [SerializeField] Transform legsParent;              //Parte que vai rotacionar e influenciar a direcao do movimento
+    [SerializeField] float legRotationSpeed = .7f;      //Velocidade de rotação das pernas
+    [SerializeField] bool debugSqrVelocity = false;     //Flag para mostrar a velcidade
+    [SerializeField] float legMoveAnimationSpeed = 3f;
 
-    //gravity--------------------
-    bool isGrounded = false;    //flag para chcar se esta no chao
-    bool canGroundCheck = true; //flag para evitar checar grounded logo apos pular
-    int groundLayer;    //camada do chao
-    float airTime = 0f; //tempo no ar, usado para contar o tempo para reativar a checagem de chao
-    float verticalSpeed = 0f;   //vevlocidade vertical para pular e trazer ao chao
-    Vector3 groundCheckOffset;  //offset para calcular o ray de grounded
+    //Gravidade---------------------------------
+    readonly float maxFallSpeed = -150f;                //evita acumulo de velocidade de queda
+    readonly float groundCheckDistance = .17f;          //Usado no tese de grounded
 
-    //componentes--------------
-    Rigidbody movementRb;  //rb responsavel pelo movimento
+    bool isGrounded = false;                            //flag para chcar se esta no chao
+    bool canGroundCheck = true;                         //flag para evitar checar grounded logo apos pular
+    int groundLayer;                                    //camada do chao
+    float airTime = 0f;                                 //tempo no ar, usado para contar o tempo para reativar a checagem de chao
+    float verticalSpeed = 0f;                           //velocidade vertical para pular e trazer ao chao
+    Vector3 groundCheckOffset;                          //offset para calcular o ray de grounded
 
+    //Pernas-------------------------------------    
+    readonly string animatorMoveFloat = "move";         //nome da variavel responsavel pela animacao de movimento
+    readonly string animatorRotateFloat = "rotate";     //nome da variavel responsavel pela animacao de rotacao
+    readonly string animatorMoveSpeedFloat = "moveSpeed";//nome da variavel responsavel pela velocidade das animacoes de movimento e rotacao
 
-    bool Grounded
-    {
-        get => isGrounded;
-        set
-        {
-            if (value != isGrounded)
-            {                
-                isGrounded = value;
-            }
+    Animator legsAnimator;                              //Componente para animar as pernas
 
-        }
-    }
+    //Componentes--------------------------------
+    Rigidbody movementRb;                               //rb responsavel pelo movimento
 
-    float AirTime
-    {
-        get => airTime;
-        set
-        {
-            airTime = value;            
-        }
-    }
-
+    //Propriedades--------------------------------
     Vector2 CurrentInput { get; set; }
 
+    //Metodos-------------------------------------
+
+    
+    void RotateTorso()
+    {
+        //TODO: metodo para rotacionar o torso para a camera com limitacoes
+    }
+
+    void AnimateLegs()
+    {
+        //retona caso nao tenha animator nas pernas
+        if (legsAnimator == null)
+            return;
+
+        //usado para testar a velocidade de animacao
+        if (debugSqrVelocity)
+            Debug.Log(movementRb.velocity.sqrMagnitude);
+
+        //limita a variacao de velocidade de animacao de 0 a 1
+        float clampedSpeed = Mathf.Clamp01(movementRb.velocity.sqrMagnitude / legMoveAnimationSpeed);
+        
+        //evita pequeno movimentos indesejados
+        if (clampedSpeed < .05f)
+            clampedSpeed = 0f;
+
+        //evita que as pernas parem de se mover ao girar sem sair do lugar
+        if(clampedSpeed < .5f && Mathf.Abs(CurrentInput.x) > .5f)
+            clampedSpeed = 1f;
+        
+        legsAnimator.SetFloat(animatorMoveSpeedFloat, clampedSpeed);        
+        legsAnimator.SetFloat(animatorMoveFloat, Vector3.Dot(movementRb.velocity, legsParent.forward));
+        legsAnimator.SetFloat(animatorRotateFloat, CurrentInput.x);
+    }
+
+    //Metodos Unity------------------------------
     private void Awake()
     {
-        groundLayer = LayerMask.GetMask("Default");        
-        movementRb = GetComponent<Rigidbody>();
+        //configurar pernas
+        legsAnimator = legsParent.GetComponentInChildren<Animator>();
 
+        //define as variaveis e componentes
+        groundLayer = LayerMask.GetMask("Default");        
         groundCheckOffset = new Vector3(0f, groundCheckRadius + .1f, 0f);
+        movementRb = GetComponent<Rigidbody>();
     }
 
     private void Update()
     {
         CurrentInput = new(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
 
-        if (Input.GetButtonDown("Jump") && Grounded)
+        if (Input.GetButtonDown("Jump") && isGrounded)
         {
             canGroundCheck = false;
-            Grounded = false;
-            AirTime = 0f;
+            isGrounded = false;
+            airTime = 0f;
             verticalSpeed = jumpForce;            
         }
 
@@ -82,7 +107,9 @@ public class MechController : MonoBehaviour
         else if (orientationRotation.y < 0f)
             orientationRotation.y += 360;
 
-        legsParent.rotation = Quaternion.Euler(orientationRotation);        
+        legsParent.rotation = Quaternion.Euler(orientationRotation);
+
+        AnimateLegs();
     }
 
     private void FixedUpdate()
@@ -90,17 +117,17 @@ public class MechController : MonoBehaviour
         //teste para grounded com coyote time
         if (canGroundCheck && Physics.SphereCast(transform.position + groundCheckOffset, groundCheckRadius, Vector3.down, out _, groundCheckDistance, groundLayer, QueryTriggerInteraction.Ignore))
         {
-            if (!Grounded)
-                Grounded = true;
+            if (!isGrounded)
+                isGrounded = true;
 
-            AirTime = 0f;
+            airTime = 0f;
         }
         else
         {
-            AirTime += Time.fixedDeltaTime;
-            if (AirTime > .2f)
+            airTime += Time.fixedDeltaTime;
+            if (airTime > .2f)
             {
-                Grounded = false;
+                isGrounded = false;
                 canGroundCheck = true;
             }
         }
@@ -109,13 +136,13 @@ public class MechController : MonoBehaviour
         Vector3 inputDir = legsParent.forward * CurrentInput.y * moveSpeed * Time.fixedDeltaTime * 100f;
 
         //adiciona drag para melhor movimento
-        movementRb.drag = inputDir.sqrMagnitude > 0f || !Grounded ? 6f : 10f;
+        movementRb.drag = inputDir.sqrMagnitude > 0f || !isGrounded ? 6f : 10f;
 
         //adiciona a velocidade vertical e leva em conta a gravidade
-        verticalSpeed = Mathf.Clamp(verticalSpeed - Mathf.Pow(weight * Time.fixedDeltaTime, 2), Grounded ? 0f : maxFallSpeed, 400f);
+        verticalSpeed = Mathf.Clamp(verticalSpeed - Mathf.Pow(weight * Time.fixedDeltaTime, 2), isGrounded ? 0f : maxFallSpeed, 400f);
         inputDir += new Vector3(0, verticalSpeed, 0);
 
-
         movementRb.AddForce(inputDir, ForceMode.Acceleration);
+        
     }
 }
