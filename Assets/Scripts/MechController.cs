@@ -4,11 +4,16 @@ using UnityEngine;
 
 public class MechController : MonoBehaviour
 {
+    
     [Header("Stats")]    
     [SerializeField] float moveSpeed = 20f;             //Velocidade de movimento
     [SerializeField] float jumpForce = 20f;             //Forca de pulo
     [SerializeField] float weight = 10f;                //Peso, usado no calculo da gravidade
     [SerializeField] float groundCheckRadius;           //Usado no teste de grounded
+
+    [Header("Torso")]
+    [SerializeField] Transform torso;                   //Referencia do torso
+    [SerializeField] float torsoRotationSpeed = 100f;   //velocidade de rotacao do torso para acompanhar a camera
 
     [Header("Legs")]
     [SerializeField] Transform legsParent;              //Parte que vai rotacionar e influenciar a direcao do movimento
@@ -26,6 +31,9 @@ public class MechController : MonoBehaviour
     float airTime = 0f;                                 //tempo no ar, usado para contar o tempo para reativar a checagem de chao
     float verticalSpeed = 0f;                           //velocidade vertical para pular e trazer ao chao
     Vector3 groundCheckOffset;                          //offset para calcular o ray de grounded
+
+    //Torso--------------------------------------
+    Transform torsoForwardRef;                          //referencia para onde o torso vai apontar
 
     //Pernas-------------------------------------    
     readonly string animatorMoveFloat = "move";         //nome da variavel responsavel pela animacao de movimento
@@ -45,7 +53,12 @@ public class MechController : MonoBehaviour
     
     void RotateTorso()
     {
-        //TODO: metodo para rotacionar o torso para a camera com limitacoes
+        //Salva somente a rotacao em Y da referencia da camera
+        Vector3 refRotation = new Vector3(0f, torsoForwardRef.rotation.eulerAngles.y, 0f);
+        Quaternion refRotationQuatern = Quaternion.Euler(refRotation);
+
+        //Mantem uma rotação do torso a velocidade constante
+        torso.rotation = Quaternion.RotateTowards(torso.rotation, refRotationQuatern, torsoRotationSpeed * Time.deltaTime);    
     }
 
     void AnimateLegs()
@@ -75,8 +88,11 @@ public class MechController : MonoBehaviour
     }
 
     //Metodos Unity------------------------------
-    private void Awake()
+    private void Start()
     {
+        //configurar torso
+        torsoForwardRef = FindObjectOfType<CameraController>().GetRefParent;
+        
         //configurar pernas
         legsAnimator = legsParent.GetComponentInChildren<Animator>();
 
@@ -109,6 +125,7 @@ public class MechController : MonoBehaviour
 
         legsParent.rotation = Quaternion.Euler(orientationRotation);
 
+        RotateTorso();
         AnimateLegs();
     }
 

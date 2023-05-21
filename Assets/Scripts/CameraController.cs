@@ -16,17 +16,20 @@ public class CameraController : MonoBehaviour
     [SerializeField] float distance = 5f;           // Distância da câmera ao ponto de referência    
     [SerializeField] float minDistance = 1f;        // Distância mínima permitida
     [SerializeField] float maxDistance = 10f;       // Distância máxima permitida
-    
-    Transform refParent;
-    Transform refChild;
 
-    float rotationX = 0f;       // Rotação vertical atual da câmera
+    float rotationX = 0f;                           // Rotação vertical atual da câmera    
+    Transform refParent, refChild;                  //Referencias da camera, criadas ao inicializa-la
 
-    private void Start()
+    //Retorna o Objeto referencia que rotationa em Y
+    public Transform GetRefParent { get => refParent; }
+
+    private void Awake()
     {
+        //inicializa escondendo o cursor
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
+        //cria os objetos referencia e configura
         refParent = new GameObject("Ref Parent").transform;
         refChild = new GameObject("Ref Child").transform;
         refChild.parent = refParent;
@@ -38,27 +41,28 @@ public class CameraController : MonoBehaviour
         if (isCameraDisabled)
             return;
 
-        // Obtem o movimento do mouse horizontal e vertical
+        //Obtem o movimento do mouse horizontal e vertical
         float horizontal = Input.GetAxis("Mouse X");
         float vertical = Input.GetAxis("Mouse Y");
 
-        // Rotaciona a câmera horizontalmente em torno do ponto de referência
+        //Rotaciona a câmera horizontalmente em torno do ponto de referência
         refParent.RotateAround(target.position, Vector3.up, horizontal * orbitSpeed * Time.deltaTime);
 
-        // Rotaciona a câmera verticalmente
+        //Rotaciona a câmera verticalmente
         rotationX -= vertical * orbitSpeed * Time.deltaTime;
         rotationX = Mathf.Clamp(rotationX, -verticalOffset - verticalLimit, -verticalOffset + verticalLimit);
         refChild.localRotation = Quaternion.Euler(rotationX, 0f, 0f);
 
-        // Calcula a nova posição da câmera
+        //Calcula a nova posição da câmera
         Vector3 offset = new Vector3(0f, height, -distance);
         Quaternion rotation = Quaternion.Euler(0f, refParent.rotation.eulerAngles.y, 0f);
         refParent.position = target.position + rotation * offset;
 
-        // Verifica se a distância está dentro dos limites
+        //Verifica se a distância está dentro dos limites
         if (isCameraFollowing)
             distance = Mathf.Clamp(distance - Input.mouseScrollDelta.y, minDistance, maxDistance);
-
+        
+        //Aplica a rotacao total do child na camera
         transform.SetPositionAndRotation(refChild.position, refChild.rotation);
     }
 }
